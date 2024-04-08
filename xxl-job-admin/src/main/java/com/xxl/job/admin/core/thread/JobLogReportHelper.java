@@ -39,12 +39,12 @@ public class JobLogReportHelper {
 
                 while (!toStop) {
 
-                    // 1、log-report refresh: refresh log report in 3 days
+                    // 统计近三天定时任务调用信息
                     try {
 
                         for (int i = 0; i < 3; i++) {
 
-                            // today
+                            // 前i天0时0分0秒
                             Calendar itemDay = Calendar.getInstance();
                             itemDay.add(Calendar.DAY_OF_MONTH, -i);
                             itemDay.set(Calendar.HOUR_OF_DAY, 0);
@@ -54,6 +54,7 @@ public class JobLogReportHelper {
 
                             Date todayFrom = itemDay.getTime();
 
+                            // 前i天23时59分59秒
                             itemDay.set(Calendar.HOUR_OF_DAY, 23);
                             itemDay.set(Calendar.MINUTE, 59);
                             itemDay.set(Calendar.SECOND, 59);
@@ -93,11 +94,11 @@ public class JobLogReportHelper {
                         }
                     }
 
-                    // 2、log-clean: switch open & once each day
+                    // 通过xxl.job.logretentiondays配置日志保留的天数，清理${xxl.job.logretentiondays}天之前的日志
                     if (XxlJobAdminConfig.getAdminConfig().getLogretentiondays()>0
                             && System.currentTimeMillis() - lastCleanLogTime > 24*60*60*1000) {
 
-                        // expire-time
+                        // 计算${xxl.job.logretentiondays}天之前的时间
                         Calendar expiredDay = Calendar.getInstance();
                         expiredDay.add(Calendar.DAY_OF_MONTH, -1 * XxlJobAdminConfig.getAdminConfig().getLogretentiondays());
                         expiredDay.set(Calendar.HOUR_OF_DAY, 0);
@@ -106,9 +107,10 @@ public class JobLogReportHelper {
                         expiredDay.set(Calendar.MILLISECOND, 0);
                         Date clearBeforeTime = expiredDay.getTime();
 
-                        // clean expired log
+                        // 清理${xxl.job.logretentiondays}天之前的日志
                         List<Long> logIds = null;
                         do {
+                            //循环清理日志
                             logIds = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().findClearLogIds(0, 0, clearBeforeTime, 0, 1000);
                             if (logIds!=null && logIds.size()>0) {
                                 XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().clearLog(logIds);

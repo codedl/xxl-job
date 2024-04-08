@@ -8,6 +8,8 @@ import com.xxl.job.core.util.ShardingUtil;
 import groovy.util.logging.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
@@ -30,6 +32,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class SampleXxlJob {
+    @Value("${server.port}")
+    private String port;
+
     private static Logger logger = LoggerFactory.getLogger(SampleXxlJob.class);
 
 
@@ -38,12 +43,8 @@ public class SampleXxlJob {
      */
     @XxlJob("demoJobHandler")
     public ReturnT<String> demoJobHandler(String param) throws Exception {
-        logger.info("XXL-JOB, Hello World.");
+        logger.info("XXL-JOB, Hello World from {}", port);
 
-        for (int i = 0; i < 5; i++) {
-            logger.info("beat at:" + i);
-//            TimeUnit.SECONDS.sleep(2);
-        }
         return ReturnT.SUCCESS;
     }
 

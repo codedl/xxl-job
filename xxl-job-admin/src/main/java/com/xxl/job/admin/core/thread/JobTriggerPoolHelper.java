@@ -24,6 +24,9 @@ public class JobTriggerPoolHelper {
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
 
+    /**
+     * 创建两个用来对定时任务进行调度的线程池
+     */
     public void start(){
         fastTriggerPool = new ThreadPoolExecutor(
                 10,
